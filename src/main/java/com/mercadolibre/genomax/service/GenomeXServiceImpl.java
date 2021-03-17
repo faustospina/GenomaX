@@ -28,7 +28,7 @@ public class GenomeXServiceImpl implements GenomeXService {
         try {
             matriz = getMatrizDna(dna);
         } catch (GenomeBusinessException g) {
-            throw new GenomeBusinessException(g.getErrorCode(), g.getMessage());
+            throw new GenomeBusinessException(g.getErrorCode());
         }
 
         for (DnaUtil.Code temp : codes) {
@@ -42,8 +42,7 @@ public class GenomeXServiceImpl implements GenomeXService {
 
 
     private char[][] getMatrizDna(DnaInDto dna) throws GenomeBusinessException {
-        int row, column = 0;
-
+        int row = 0;
         if (dna.getDna().isEmpty()) {
             throw new GenomeBusinessException(NotificationCode.EMPTY_ARRAY);
         } else {
@@ -55,12 +54,17 @@ public class GenomeXServiceImpl implements GenomeXService {
                     .toArray(new char[0][]);
 
             row = matrizToVerificar.length;
-            column = matrizToVerificar[0].length;
 
-            if (row == column && row + column > 8) {
+            for (int i = 0; i <matrizToVerificar.length ; i++) {
+                if (row!=matrizToVerificar[i].length){
+                    throw new GenomeBusinessException(NotificationCode.NOT_ARRAY_NXN);
+                }
+            }
+
+            if (row>4) {
                 return matrizToVerificar;
             } else {
-                throw new GenomeBusinessException(NotificationCode.NOT_ARRAY_NXN);
+                throw new GenomeBusinessException(NotificationCode.MIN_LENGTH_ARRAY);
             }
         }
 
