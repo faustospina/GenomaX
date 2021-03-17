@@ -1,86 +1,113 @@
 package com.mercadolibre.genomax.service;
 
+import com.mercadolibre.genomax.common.NotificationCode;
 import com.mercadolibre.genomax.dto.DnaInDto;
-import com.mercadolibre.genomax.dto.GenomeDto;
+import com.mercadolibre.genomax.exception.GenomeBusinessException;
+import com.mercadolibre.genomax.util.DnaUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class GenomeXServiceImpl implements GenomeXService {
 
-    private static final String GENOME_A = "AAAA";
-    private static final String GENOME_T = "TTTT";
-    private static final String GENOME_C = "CCCC";
-    private static final String GENOME_G = "GGGG";
+
+    private final DnaUtil dnaUtil;
+
+    private char[][] matriz;
 
 
     @Override
-    public Boolean isMutant(DnaInDto dna) {
-        boolean flag = false;
+    public Boolean isMutant(DnaInDto dna) throws GenomeBusinessException {
+        List<DnaUtil.Code> codes = dnaUtil.getDna();
         int count = 0;
+        try {
+            matriz = getMatrizDna(dna);
+        } catch (GenomeBusinessException g) {
+            throw new GenomeBusinessException(g.getErrorCode(), g.getMessage());
+        }
 
-     
-
-        GenomeDto genomeDtoA = new GenomeDto();
-        genomeDtoA.setGenomeType(GENOME_A);
-        GenomeDto genomeDtoT = new GenomeDto();
-        genomeDtoT.setGenomeType(GENOME_T);
-        GenomeDto genomeDtoC = new GenomeDto();
-        genomeDtoC.setGenomeType(GENOME_C);
-        GenomeDto genomeDtoG = new GenomeDto();
-        genomeDtoG.setGenomeType(GENOME_G);
-        List<GenomeDto> listGenomeDto = new ArrayList<>();
-        listGenomeDto.add(genomeDtoA);
-        listGenomeDto.add(genomeDtoT);
-        listGenomeDto.add(genomeDtoC);
-
-        listGenomeDto.add(genomeDtoG);
-        for (GenomeDto temp : listGenomeDto) {
-            flag = resolver(temp.getGenomeType());
+        for (DnaUtil.Code temp : codes) {
             if (count > 1)
                 return true;
-            if (flag)
+            if (resolver(temp.getCode()))
                 count++;
         }
-        return flag;
+       return false;
     }
 
 
-    private char[][] matriz = {{'A', 'T', 'G', 'C', 'G', 'A'},
-            {'C', 'A', 'G', 'T', 'G', 'C'},
-            {'T', 'T', 'A', 'T', 'G', 'T'},
-            {'A', 'G', 'A', 'A', 'G', 'G'},
-            {'C', 'C', 'C', 'C', 'T', 'A'},
-            {'T', 'C', 'A', 'C', 'T', 'G'}};
+    private char[][] getMatrizDna(DnaInDto dna) throws GenomeBusinessException {
+        int row, column = 0;
+
+        if (dna.getDna().isEmpty()) {
+            throw new GenomeBusinessException(NotificationCode.EMPTY_ARRAY);
+        } else {
+            char[][] matrizToVerificar = dna
+                    .getDna()
+                    .stream()
+                    .map(cadena -> cadena.toCharArray())
+                    .collect(Collectors.toList())
+                    .toArray(new char[0][]);
+
+            row = matrizToVerificar.length;
+            column = matrizToVerificar[0].length;
+
+            if (row == column && row + column > 8) {
+                return matrizToVerificar;
+            } else {
+                throw new GenomeBusinessException(NotificationCode.NOT_ARRAY_NXN);
+            }
+        }
+
+    }
 
 
-    public Boolean resolver(String palabra) {
+    private Boolean resolver(String palabra) {
 
         for (int[] pos : posiblesSolucionesDe(palabra)) {
             // Buscar horizontalmente hacia derecha.
             String palabraEncontrada = palabraEnMatriz(pos, palabra.length(), 0, 1);
-            if (palabraEncontrada.equals(palabra))
+            if(palabraEncontrada.equals(palabra))
                 return true;
+
+            // Buscar horizontalmente hacia izquierda.
+            palabraEncontrada = palabraEnMatriz(pos, palabra.length(), 0, -1);
+            if(palabraEncontrada.equals(palabra))
+                return true;
+
             // Buscar verticalmente hacia abajo.
             palabraEncontrada = palabraEnMatriz(pos, palabra.length(), 1, 0);
-            if (palabraEncontrada.equals(palabra))
+            if(palabraEncontrada.equals(palabra))
                 return true;
+
+            // Buscar verticalmente hacia arriba.
+            palabraEncontrada = palabraEnMatriz(pos, palabra.length(), -1, 0);
+            if(palabraEncontrada.equals(palabra))
+                return true;
+
             // Buscar diagonal superior derecha.
             palabraEncontrada = palabraEnMatriz(pos, palabra.length(), -1, 1);
-            if (palabraEncontrada.equals(palabra))
-                return true;            // Buscar diagonal superior izquierda.
-            palabraEncontrada = palabraEnMatriz(pos, palabra.length(), -1, -1);
-            if (palabraEncontrada.equals(palabra))
+            if(palabraEncontrada.equals(palabra))
                 return true;
+
+            // Buscar diagonal superior izquierda.
+            palabraEncontrada = palabraEnMatriz(pos, palabra.length(), -1, -1);
+            if(palabraEncontrada.equals(palabra))
+                return true;
+
             // Buscar diagonal inferior derecha.
             palabraEncontrada = palabraEnMatriz(pos, palabra.length(), 1, 1);
-            if (palabraEncontrada.equals(palabra))
+            if(palabraEncontrada.equals(palabra))
                 return true;
+
             // Buscar diagonal inferior izquierda.
             palabraEncontrada = palabraEnMatriz(pos, palabra.length(), 1, -1);
-            if (palabraEncontrada.equals(palabra))
+            if(palabraEncontrada.equals(palabra))
                 return true;
         }
         return false;
@@ -90,7 +117,7 @@ public class GenomeXServiceImpl implements GenomeXService {
      * Retorna indice invertido de las posiciones donde puede
      * resolverse una palabra buscada.
      */
-    public int[][] posiblesSolucionesDe(String palabra) {
+    private int[][] posiblesSolucionesDe(String palabra) {
         char primeraLetra = palabra.charAt(0);
         List<int[]> indiceInvertido = new ArrayList<int[]>();
 
