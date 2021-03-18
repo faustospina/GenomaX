@@ -2,14 +2,11 @@ package com.mercadolibre.genomax.service;
 
 import com.mercadolibre.genomax.common.NotificationCode;
 import com.mercadolibre.genomax.dto.DnaInDto;
-import com.mercadolibre.genomax.dto.IResult;
 import com.mercadolibre.genomax.dto.StatDto;
 import com.mercadolibre.genomax.entity.StatEntity;
 import com.mercadolibre.genomax.exception.GenomeBusinessException;
-import com.mercadolibre.genomax.repository.StatRepository;
 import com.mercadolibre.genomax.util.DnaUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,11 +20,7 @@ public class GenomeXServiceImpl implements GenomeXService {
 
 
     private final DnaUtil dnaUtil;
-
-    private final StatRepository statRepository;
-
-
-    private IResult iResult;
+    private final StatService statService;
 
     private char[][] matriz;
 
@@ -43,29 +36,58 @@ public class GenomeXServiceImpl implements GenomeXService {
             throw new GenomeBusinessException(g.getErrorCode());
         }
 
-        for (DnaUtil.Code temp : codes) {
-            if (resolver(temp.getCode())) {
+        for (DnaUtil.Code code : codes) {
+            if (resolver(code.getCode())) {
                 count++;
             }
             if (count > 1) {
-                statRepository.save(StatEntity.builder().id(UUID.randomUUID()).mutant(1).human(0).build());
-                return true;
+                try {
+                    statService.saveStat(StatEntity.builder().id(UUID.randomUUID()).mutant(1).human(0).build());
+                    return true;
+                } catch (GenomeBusinessException g) {
+                    throw new GenomeBusinessException(g.getErrorCode());
+                }
+
             }
         }
-
-        statRepository.save(StatEntity.builder().id(UUID.randomUUID()).mutant(0).human(1).build());
-        return false;
+        try {
+            statService.saveStat(StatEntity.builder().id(UUID.randomUUID()).mutant(0).human(1).build());
+            return false;
+        } catch (GenomeBusinessException g) {
+            throw new GenomeBusinessException(g.getErrorCode());
+        }
     }
 
     @Override
-    public StatDto stats() {
-        int mutant=statRepository.ValueMutant();
-        int human= statRepository.ValueHuman();
-        StatDto statDto= new StatDto();
-        statDto.setCount_mutant_dna(mutant);
-        statDto.setCount_human_dna(human);
-        statDto.setRate(mutant/human);
-        return statDto;
+    public StatDto stats() throws GenomeBusinessException {
+        int mutant = 0;
+        int human = 0;
+        double rate = 0.0;
+        try {
+            mutant = statService.getNumMutant();
+            human = statService.getNumHuman();
+            rate = rate(mutant, human);
+        } catch (GenomeBusinessException g) {
+            throw new GenomeBusinessException(g.getErrorCode());
+        }
+        return StatDto.builder()
+                .count_mutant_dna(mutant)
+                .count_human_dna(human)
+                .rate(rate)
+                .build();
+    }
+
+    private double rate(int mutantNum,int humanNum) throws GenomeBusinessException {
+        if (mutantNum==0||humanNum==0){
+            throw new GenomeBusinessException(NotificationCode.DIVISION_BY_ZERO);
+        }
+
+        if (mutantNum>humanNum){
+            return (double)humanNum/mutantNum;
+        }else{
+            return (double)mutantNum/humanNum;
+        }
+
     }
 
 
@@ -74,23 +96,23 @@ public class GenomeXServiceImpl implements GenomeXService {
         if (dna.getDna().isEmpty()) {
             throw new GenomeBusinessException(NotificationCode.EMPTY_ARRAY);
         } else {
-            char[][] matrizToVerificar = dna
+            char[][] matrixToValidate = dna
                     .getDna()
                     .stream()
                     .map(cadena -> cadena.toCharArray())
                     .collect(Collectors.toList())
                     .toArray(new char[0][]);
 
-            row = matrizToVerificar.length;
+            row = matrixToValidate.length;
 
-            for (int i = 0; i < matrizToVerificar.length; i++) {
-                if (row != matrizToVerificar[i].length) {
+            for (int i = 0; i < matrixToValidate.length; i++) {
+                if (row != matrixToValidate[i].length) {
                     throw new GenomeBusinessException(NotificationCode.NOT_ARRAY_NXN);
                 }
             }
 
             if (row > 4) {
-                return matrizToVerificar;
+                return matrixToValidate;
             } else {
                 throw new GenomeBusinessException(NotificationCode.MIN_LENGTH_ARRAY);
             }

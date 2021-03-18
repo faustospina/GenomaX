@@ -2,7 +2,7 @@ spring.profiles.active: default
 server.port: 8085
 spring.jpa.database: POSTGRESQL
 spring.datasource.platform: postgres
-spring.datasource.url: jdbc:postgresql://localhost:5432/postgres
+spring.datasource.url: jdbc:postgresql://localhost:5432/postgres?reWriteBatchedInserts=true
 spring.datasource.username: postgres
 spring.datasource.password: qwer12345
 spring.jpa.show-sql: true

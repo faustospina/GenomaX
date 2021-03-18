@@ -7,6 +7,6 @@ import com.mercadolibre.genomax.exception.GenomeBusinessException;
 public interface GenomeXService {
 
     Boolean isMutant(DnaInDto dna) throws GenomeBusinessException;
-    StatDto stats();
+    StatDto stats() throws GenomeBusinessException;
 
 }

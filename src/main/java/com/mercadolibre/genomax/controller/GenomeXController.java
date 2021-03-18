@@ -2,6 +2,7 @@ package com.mercadolibre.genomax.controller;
 
 import com.mercadolibre.genomax.common.ApiResponseDF;
 import com.mercadolibre.genomax.common.Notification;
+import com.mercadolibre.genomax.common.NotificationCode;
 import com.mercadolibre.genomax.dto.DnaInDto;
 import com.mercadolibre.genomax.dto.StatDto;
 import com.mercadolibre.genomax.exception.GenomeBusinessException;
@@ -19,31 +20,26 @@ import java.util.UUID;
 @RequestMapping("/genome")
 public class GenomeXController {
 
-    private static final String API_NAME="GenomeXController";
-
     @Autowired
     private GenomeXService genomeXService;
 
-    @PostMapping(path = "/mutant", consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponseDF<Boolean> addActivity(@RequestBody DnaInDto dna) throws GenomeBusinessException {
-        return new ApiResponseDF(genomeXService.isMutant(dna),onSuccessNotification());
+    @PostMapping(path = "/mutant", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> addActivity(@RequestBody DnaInDto dna) {
+        try {
+            return new ResponseEntity<>(genomeXService.isMutant(dna) ? HttpStatus.OK : HttpStatus.FORBIDDEN);
+        } catch (GenomeBusinessException g) {
+            return new ResponseEntity<>(g.getMessage(), g.getErrorCode().getHttpStatus());
+        }
     }
 
-
-
-    private Notification onSuccessNotification() {
-        return new Notification.Builder(HttpStatus.OK.getReasonPhrase(), HttpStatus.OK.toString())
-                .reference(UUID.randomUUID().toString()).source(API_NAME).build();
-    }
-    @GetMapping(path = "/stats",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponseDF<StatDto> getStats(){
-        return new ApiResponseDF<>(genomeXService.stats(),onSuccessNotification());
+    @GetMapping(path = "/stats", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getStats() {
+        try {
+            return new ResponseEntity<>(genomeXService.stats(), HttpStatus.OK);
+        } catch (GenomeBusinessException g) {
+            return new ResponseEntity<>(g.getMessage(), g.getErrorCode().getHttpStatus());
+        }
 
     }
-
-
-
-
-
 
 }
