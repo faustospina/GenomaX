@@ -1,10 +1,6 @@
 package com.mercadolibre.genomax.controller;
 
-import com.mercadolibre.genomax.common.ApiResponseDF;
-import com.mercadolibre.genomax.common.Notification;
-import com.mercadolibre.genomax.common.NotificationCode;
 import com.mercadolibre.genomax.dto.DnaInDto;
-import com.mercadolibre.genomax.dto.StatDto;
 import com.mercadolibre.genomax.exception.GenomeBusinessException;
 import com.mercadolibre.genomax.service.GenomeXService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @CrossOrigin(origins = {"http://localhost:4200"})
 @RestController
-@RequestMapping("/genome")
 public class GenomeXController {
 
     @Autowired
