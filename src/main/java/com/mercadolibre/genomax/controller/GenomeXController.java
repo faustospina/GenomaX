@@ -3,6 +3,7 @@ package com.mercadolibre.genomax.controller;
 import com.mercadolibre.genomax.common.ApiResponseDF;
 import com.mercadolibre.genomax.common.Notification;
 import com.mercadolibre.genomax.dto.DnaInDto;
+import com.mercadolibre.genomax.dto.StatDto;
 import com.mercadolibre.genomax.exception.GenomeBusinessException;
 import com.mercadolibre.genomax.service.GenomeXService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,14 @@ public class GenomeXController {
         return new Notification.Builder(HttpStatus.OK.getReasonPhrase(), HttpStatus.OK.toString())
                 .reference(UUID.randomUUID().toString()).source(API_NAME).build();
     }
+    @GetMapping(path = "/stats",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponseDF<StatDto> getStats(){
+        return new ApiResponseDF<>(genomeXService.stats(),onSuccessNotification());
+
+    }
+
+
+
 
 
 
