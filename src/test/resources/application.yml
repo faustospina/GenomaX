@@ -1,22 +1,22 @@
-spring.profiles.active: default
-server.port: 8085
-spring.jpa.database: POSTGRESQL
-spring.datasource.platform: postgres
-spring.datasource.url: jdbc:postgresql://localhost:5432/postgres?reWriteBatchedInserts=true
-spring.datasource.username: postgres
-spring.datasource.password: qwer12345
-spring.jpa.show-sql: true
-spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: true
-
 #spring.profiles.active: default
 #server.port: 8085
 #spring.jpa.database: POSTGRESQL
 #spring.datasource.platform: postgres
-#spring.datasource.url: jdbc:postgresql://genomax.cjkezubprwkh.us-east-2.rds.amazonaws.com:5432/postgres?reWriteBatchedInserts=true
-#spring.datasource.username: genomax
+#spring.datasource.url: jdbc:postgresql://localhost:5432/postgres?reWriteBatchedInserts=true
+#spring.datasource.username: postgres
 #spring.datasource.password: qwer12345
 #spring.jpa.show-sql: true
 #spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: true
+
+spring.profiles.active: default
+server.port: 8085
+spring.jpa.database: POSTGRESQL
+spring.datasource.platform: postgres
+spring.datasource.url: jdbc:postgresql://genomax.cjkezubprwkh.us-east-2.rds.amazonaws.com:5432/postgres?reWriteBatchedInserts=true
+spring.datasource.username: genomax
+spring.datasource.password: qwer12345
+spring.jpa.show-sql: true
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: true
 
 genome:
    dna:
