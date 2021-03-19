@@ -22,7 +22,7 @@ public class GenomeXServiceImpl implements GenomeXService {
     private final DnaUtil dnaUtil;
     private final StatService statService;
 
-    private char[][] matriz;
+    private char[][] matrix;
 
 
     @Override
@@ -31,7 +31,7 @@ public class GenomeXServiceImpl implements GenomeXService {
         int count = 0;
 
         try {
-            matriz = getMatrizDna(dna);
+            matrix = getMatrixValidateDna(dna);
         } catch (GenomeBusinessException g) {
             throw new GenomeBusinessException(g.getErrorCode());
         }
@@ -91,7 +91,7 @@ public class GenomeXServiceImpl implements GenomeXService {
     }
 
 
-    private char[][] getMatrizDna(DnaInDto dna) throws GenomeBusinessException {
+    private char[][] getMatrixValidateDna(DnaInDto dna) throws GenomeBusinessException {
         int row = 0;
         if (dna.getDna().isEmpty()) {
             throw new GenomeBusinessException(NotificationCode.EMPTY_ARRAY);
@@ -99,7 +99,8 @@ public class GenomeXServiceImpl implements GenomeXService {
             char[][] matrixToValidate = dna
                     .getDna()
                     .stream()
-                    .map(cadena -> cadena.toCharArray())
+                    .map(String::toUpperCase)
+                    .map(String::toCharArray)
                     .collect(Collectors.toList())
                     .toArray(new char[0][]);
 
@@ -108,6 +109,14 @@ public class GenomeXServiceImpl implements GenomeXService {
             for (int i = 0; i < matrixToValidate.length; i++) {
                 if (row != matrixToValidate[i].length) {
                     throw new GenomeBusinessException(NotificationCode.NOT_ARRAY_NXN);
+                }
+            }
+
+            for (int i = 0; i < matrixToValidate.length; i++) {
+                for (int j = 0; j <matrixToValidate.length ; j++) {
+                    if (matrixToValidate[i][j]!='A'&&matrixToValidate[i][j]!='C'&&matrixToValidate[i][j]!='T'&&matrixToValidate[i][j]!='G'){
+                        throw new GenomeBusinessException(NotificationCode.DNA_NOT_MATH);
+                    }
                 }
             }
 
@@ -128,22 +137,18 @@ public class GenomeXServiceImpl implements GenomeXService {
             String palabraEncontrada = palabraEnMatriz(pos, palabra.length(), 0, 1);
             if (palabraEncontrada.equals(palabra))
                 return true;
-
             // Buscar horizontalmente hacia izquierda.
             palabraEncontrada = palabraEnMatriz(pos, palabra.length(), 0, -1);
             if (palabraEncontrada.equals(palabra))
                 return true;
-
             // Buscar verticalmente hacia abajo.
             palabraEncontrada = palabraEnMatriz(pos, palabra.length(), 1, 0);
             if (palabraEncontrada.equals(palabra))
                 return true;
-
             // Buscar verticalmente hacia arriba.
             palabraEncontrada = palabraEnMatriz(pos, palabra.length(), -1, 0);
             if (palabraEncontrada.equals(palabra))
                 return true;
-
             // Buscar diagonal superior derecha.
             palabraEncontrada = palabraEnMatriz(pos, palabra.length(), -1, 1);
             if (palabraEncontrada.equals(palabra))
@@ -153,12 +158,10 @@ public class GenomeXServiceImpl implements GenomeXService {
             palabraEncontrada = palabraEnMatriz(pos, palabra.length(), -1, -1);
             if (palabraEncontrada.equals(palabra))
                 return true;
-
             // Buscar diagonal inferior derecha.
             palabraEncontrada = palabraEnMatriz(pos, palabra.length(), 1, 1);
             if (palabraEncontrada.equals(palabra))
                 return true;
-
             // Buscar diagonal inferior izquierda.
             palabraEncontrada = palabraEnMatriz(pos, palabra.length(), 1, -1);
             if (palabraEncontrada.equals(palabra))
@@ -167,46 +170,59 @@ public class GenomeXServiceImpl implements GenomeXService {
         return false;
     }
 
-    /*
-     * Retorna indice invertido de las posiciones donde puede
-     * resolverse una palabra buscada.
+
+
+    /**
+     * invierte la posicion para buscar coincidencias
+     * @param palabra
+     * @return
      */
     private int[][] posiblesSolucionesDe(String palabra) {
         char primeraLetra = palabra.charAt(0);
         List<int[]> indiceInvertido = new ArrayList<int[]>();
 
-        for (int i = 0; i < matriz.length; i++) {
-            for (int j = 0; j < matriz[i].length; j++) {
-                if (matriz[i][j] == primeraLetra) {
-                    indiceInvertido.add(new int[]{i, j}); // Guardar la posicion de la letra en la matriz.
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] == primeraLetra) {
+                    indiceInvertido.add(new int[]{i, j});
                 }
             }
         }
         return toArrayInt(indiceInvertido);
     }
 
-    /*
+
+
+    /**
      * Transforma un objeto List a un multi arreglo
      * de nœmeros enteros.
-     * @param list la lista a transformar.
+     * @param list
+     * @return
      */
     private int[][] toArrayInt(List<int[]> list) {
         return (int[][]) list.toArray(new int[list.size()][list.get(0).length]);
     }
 
-    /*
+
+
+    /**
      * Algoritmo que busca palabras en la matriz de palabras de forma
      * recursiva usando la tŽcnica de backtracking.
+     * @param posInicial
+     * @param numeroCaracteres
+     * @param moverEnFila
+     * @param moverEnColumna
+     * @return
      */
-    public String palabraEnMatriz(int[] posInicial, int numeroCaracteres, int moverEnFila, int moverEnColumna) {
+    private String palabraEnMatriz(int[] posInicial, int numeroCaracteres, int moverEnFila, int moverEnColumna) {
         String palabra = "";
         int recorrido = 0, fila = posInicial[0], columna = posInicial[1];
 
         while ((recorrido < numeroCaracteres) &&
-                (fila < matriz.length && columna < matriz.length) &&
+                (fila < matrix.length && columna < matrix.length) &&
                 (fila > -1 && columna > -1)) {
 
-            palabra += matriz[fila][columna];
+            palabra += matrix[fila][columna];
             fila = fila + moverEnFila;
             columna = columna + moverEnColumna;
             recorrido++;

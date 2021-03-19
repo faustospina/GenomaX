@@ -9,6 +9,7 @@ public enum NotificationCode {
     NULL_ENTITY("empty entity when saving in database ",HttpStatus.FORBIDDEN),
     EMPTY_DATA("empty data in dataBase",HttpStatus.FORBIDDEN),
     DIVISION_BY_ZERO("division by zero",HttpStatus.FORBIDDEN),
+    DNA_NOT_MATH("THE DNA CHAIN DOES NOT MATCH ",HttpStatus.FORBIDDEN),
     EMPTY_ARRAY("this array is empty",HttpStatus.FORBIDDEN);
 
 
