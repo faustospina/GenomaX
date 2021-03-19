@@ -1,0 +1,132 @@
+{
+	"info": {
+		"_postman_id": "f8f48a17-f892-4062-bb3b-18d0967ecf12",
+		"name": "genomaX",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "dev+",
+			"item": [
+				{
+					"name": "devp/mutant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"dna\": [ \r\n        \"CTGTAT\",\r\n        \"ACTACA\", \r\n        \"ACCACC\",\r\n\t\t\"ATGCAG\",\r\n        \"ACTAGT\", \r\n        \"ACCTCG\"\r\n        ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8085/mutant",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"mutant"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "devp/stats",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8085/stats",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"stats"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "prod",
+			"item": [
+				{
+					"name": "produccion/stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://3.14.64.200:8085/stats",
+							"protocol": "http",
+							"host": [
+								"3",
+								"14",
+								"64",
+								"200"
+							],
+							"port": "8085",
+							"path": [
+								"stats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "produccion/mutant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"dna\": [ \r\n        \"CTGTAT\",\r\n        \"ACTACA\", \r\n        \"TCGACC\",\r\n\t\t\"CTGCAG\",\r\n        \"ACAAGT\", \r\n        \"ACCTCG\"\r\n        ]\r\n}"
+						},
+						"url": {
+							"raw": "http://3.14.64.200:8085/mutant",
+							"protocol": "http",
+							"host": [
+								"3",
+								"14",
+								"64",
+								"200"
+							],
+							"port": "8085",
+							"path": [
+								"mutant"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
