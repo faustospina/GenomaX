@@ -5,7 +5,9 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
-
+/**
+ * dto para mostrar las estadisticas
+ */
 @Data
 @Builder
 public class StatDto {

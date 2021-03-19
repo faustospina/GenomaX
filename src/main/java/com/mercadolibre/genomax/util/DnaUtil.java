@@ -8,6 +8,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * clase que mapea de las propiedades los codigos
+ * ejemplo (AAAA,CCCC,TTTT,GGGG)
+ */
 @Data
 @Component
 @ConfigurationProperties(prefix = "genome")

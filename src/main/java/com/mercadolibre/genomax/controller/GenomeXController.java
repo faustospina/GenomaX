@@ -16,6 +16,11 @@ public class GenomeXController {
     @Autowired
     private GenomeXService genomeXService;
 
+    /**
+     * end point para la verificacion y la insercion en la base de datos
+     * @param dna
+     * @return
+     */
     @PostMapping(path = "/mutant", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> isMutant(@RequestBody DnaInDto dna) {
         try {
@@ -25,6 +30,10 @@ public class GenomeXController {
         }
     }
 
+    /**
+     * end point para obtener las estadisticas de cuantos mutantes, humanos y el promedio
+     * @return
+     */
     @GetMapping(path = "/stats", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getStats() {
         try {

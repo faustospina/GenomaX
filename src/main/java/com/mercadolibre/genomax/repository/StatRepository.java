@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
+/**
+ * interface para el manejo de consultas y persistenca con la base de datos
+ */
 @Repository
 public interface StatRepository  extends CrudRepository<StatEntity, UUID> {
 

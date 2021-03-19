@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * servicio para la gestion de la cadena del ADN y la consulta de estadisticas
+ */
 @Service
 @RequiredArgsConstructor
 public class GenomeXServiceImpl implements GenomeXService {

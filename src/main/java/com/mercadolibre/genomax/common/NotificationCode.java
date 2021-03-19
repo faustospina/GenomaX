@@ -2,6 +2,9 @@ package com.mercadolibre.genomax.common;
 
 import org.springframework.http.HttpStatus;
 
+/**
+ * enum para el manejo de excepciones
+ */
 public enum NotificationCode {
 
     NOT_ARRAY_NXN("the two-dimensional array is not NxN",HttpStatus.FORBIDDEN),

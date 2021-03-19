@@ -8,6 +8,9 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
+/**
+ * dto para mappear la cadena de ADN
+ */
 @Data
 @RequiredArgsConstructor
 public class DnaInDto {
