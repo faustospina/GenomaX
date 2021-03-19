@@ -24,7 +24,13 @@ public class GenomeXServiceImpl implements GenomeXService {
 
     private char[][] matrix;
 
-
+    /**
+     * metodo para validar si la secuencia de ADN
+     * es mutante o humano
+     * @param dna
+     * @return boolean
+     * @throws GenomeBusinessException
+     */
     @Override
     public Boolean isMutant(DnaInDto dna) throws GenomeBusinessException {
         List<DnaUtil.Code> codes = dnaUtil.getDna();
@@ -37,7 +43,7 @@ public class GenomeXServiceImpl implements GenomeXService {
         }
 
         for (DnaUtil.Code code : codes) {
-            if (resolver(code.getCode())) {
+            if (Boolean.TRUE.equals(resolver(code.getCode()))) {
                 count++;
             }
             if (count > 1) {
@@ -58,6 +64,12 @@ public class GenomeXServiceImpl implements GenomeXService {
         }
     }
 
+    /**
+     * metodo que consulta en la base de datos la
+     * sumatoria de numero de mutantes y de humanos
+     * @return
+     * @throws GenomeBusinessException
+     */
     @Override
     public StatDto stats() throws GenomeBusinessException {
         int mutant = 0;
@@ -77,22 +89,35 @@ public class GenomeXServiceImpl implements GenomeXService {
                 .build();
     }
 
-    private double rate(int mutantNum,int humanNum) throws GenomeBusinessException {
-        if (mutantNum==0||humanNum==0){
+
+    /**
+     * validacion del numero de mutantes y de humanos y asi
+     * crear el promedio
+     * @param mutantNum
+     * @param humanNum
+     * @return
+     * @throws GenomeBusinessException
+     */
+    private double rate(int mutantNum, int humanNum) throws GenomeBusinessException {
+        if (mutantNum == 0 || humanNum == 0) {
             throw new GenomeBusinessException(NotificationCode.DIVISION_BY_ZERO);
         }
-
-        if (mutantNum>humanNum){
-            return (double)humanNum/mutantNum;
-        }else{
-            return (double)mutantNum/humanNum;
+        if (mutantNum > humanNum) {
+            return (double) humanNum / mutantNum;
+        } else {
+            return (double) mutantNum / humanNum;
         }
 
     }
 
-
+    /**
+     * metodo de verificacion del array y asi crear la matriz
+     * @param dna
+     * @return
+     * @throws GenomeBusinessException
+     */
     private char[][] getMatrixValidateDna(DnaInDto dna) throws GenomeBusinessException {
-        int row = 0;
+
         if (dna.getDna().isEmpty()) {
             throw new GenomeBusinessException(NotificationCode.EMPTY_ARRAY);
         } else {
@@ -104,32 +129,30 @@ public class GenomeXServiceImpl implements GenomeXService {
                     .collect(Collectors.toList())
                     .toArray(new char[0][]);
 
-            row = matrixToValidate.length;
-
             for (int i = 0; i < matrixToValidate.length; i++) {
-                if (row != matrixToValidate[i].length) {
-                    throw new GenomeBusinessException(NotificationCode.NOT_ARRAY_NXN);
-                }
-            }
-
-            for (int i = 0; i < matrixToValidate.length; i++) {
-                for (int j = 0; j <matrixToValidate.length ; j++) {
-                    if (matrixToValidate[i][j]!='A'&&matrixToValidate[i][j]!='C'&&matrixToValidate[i][j]!='T'&&matrixToValidate[i][j]!='G'){
+                for (int j = 0; j < matrixToValidate.length; j++) {
+                    if (matrixToValidate.length<5){
+                        throw new GenomeBusinessException(NotificationCode.MIN_LENGTH_ARRAY);
+                    }
+                    if (matrixToValidate.length != matrixToValidate[i].length) {
+                        throw new GenomeBusinessException(NotificationCode.NOT_ARRAY_NXN);
+                    }
+                    if (matrixToValidate[i][j] != 'A' && matrixToValidate[i][j] != 'C' && matrixToValidate[i][j] != 'T' && matrixToValidate[i][j] != 'G') {
                         throw new GenomeBusinessException(NotificationCode.DNA_NOT_MATH);
                     }
                 }
             }
-
-            if (row > 4) {
-                return matrixToValidate;
-            } else {
-                throw new GenomeBusinessException(NotificationCode.MIN_LENGTH_ARRAY);
-            }
+            return matrixToValidate;
         }
 
     }
 
-
+    /**
+     * metodo de verificacion de cadena de caracteres para cada fila columna y diagonal
+     * en cada una de sus formas y direccion
+     * @param palabra
+     * @return
+     */
     private Boolean resolver(String palabra) {
 
         for (int[] pos : posiblesSolucionesDe(palabra)) {
@@ -171,15 +194,15 @@ public class GenomeXServiceImpl implements GenomeXService {
     }
 
 
-
     /**
      * invierte la posicion para buscar coincidencias
+     *
      * @param palabra
      * @return
      */
     private int[][] posiblesSolucionesDe(String palabra) {
         char primeraLetra = palabra.charAt(0);
-        List<int[]> indiceInvertido = new ArrayList<int[]>();
+        List<int[]> indiceInvertido = new ArrayList<>();
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
@@ -192,22 +215,22 @@ public class GenomeXServiceImpl implements GenomeXService {
     }
 
 
-
     /**
      * Transforma un objeto List a un multi arreglo
      * de nœmeros enteros.
+     *
      * @param list
      * @return
      */
     private int[][] toArrayInt(List<int[]> list) {
-        return (int[][]) list.toArray(new int[list.size()][list.get(0).length]);
+        return list.toArray(new int[list.size()][list.get(0).length]);
     }
-
 
 
     /**
      * Algoritmo que busca palabras en la matriz de palabras de forma
-     * recursiva usando la tŽcnica de backtracking.
+     * recursiva usando la tecnica de backtracking.
+     *
      * @param posInicial
      * @param numeroCaracteres
      * @param moverEnFila
@@ -216,7 +239,9 @@ public class GenomeXServiceImpl implements GenomeXService {
      */
     private String palabraEnMatriz(int[] posInicial, int numeroCaracteres, int moverEnFila, int moverEnColumna) {
         String palabra = "";
-        int recorrido = 0, fila = posInicial[0], columna = posInicial[1];
+        int recorrido = 0;
+        int fila = posInicial[0];
+        int columna = posInicial[1];
 
         while ((recorrido < numeroCaracteres) &&
                 (fila < matrix.length && columna < matrix.length) &&
