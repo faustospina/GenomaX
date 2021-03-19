@@ -17,7 +17,7 @@ public class GenomeXController {
     private GenomeXService genomeXService;
 
     @PostMapping(path = "/mutant", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> addActivity(@RequestBody DnaInDto dna) {
+    public ResponseEntity<?> isMutant(@RequestBody DnaInDto dna) {
         try {
             return new ResponseEntity<>(genomeXService.isMutant(dna) ? HttpStatus.OK : HttpStatus.FORBIDDEN);
         } catch (GenomeBusinessException g) {

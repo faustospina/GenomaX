@@ -24,14 +24,23 @@ public class StatServiceImplTest {
     private StatRepository statRepository;
 
 
-    private StatEntity buildToSave() {
+    private StatEntity buildMutantToSave() {
+        return StatEntity.builder().id(UUID.randomUUID()).mutant(1).human(0).build();
+    }
+
+    private StatEntity buildHumanToSave() {
         return StatEntity.builder().id(UUID.randomUUID()).mutant(1).human(0).build();
     }
 
 
     @Test
-    public void saveStat() throws GenomeBusinessException {
-        statService.saveStat(buildToSave());
+    public void saveStatMutant() throws GenomeBusinessException {
+        statService.saveStat(buildMutantToSave());
+    }
+
+    @Test
+    public void saveStatHuman() throws GenomeBusinessException {
+        statService.saveStat(buildHumanToSave());
     }
 
     @Test(expected = GenomeBusinessException.class)
