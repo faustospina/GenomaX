@@ -134,7 +134,7 @@ public class GenomeXServiceImpl implements GenomeXService {
 
             for (int i = 0; i < matrixToValidate.length; i++) {
                 for (int j = 0; j < matrixToValidate.length; j++) {
-                    if (matrixToValidate.length<5){
+                    if (matrixToValidate.length<4){
                         throw new GenomeBusinessException(NotificationCode.MIN_LENGTH_ARRAY);
                     }
                     if (matrixToValidate.length != matrixToValidate[i].length) {
