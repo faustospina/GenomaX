@@ -88,10 +88,9 @@ public class GenomeXServiceImplTest {
     private DnaInDto minLength(){
         DnaInDto dna = new DnaInDto();
         dna.setDna(new ArrayList<>());
-        dna.getDna().add("ATGC");
-        dna.getDna().add("CAGT");
-        dna.getDna().add("TTAT");
-        dna.getDna().add("AGAA");
+        dna.getDna().add("ATG");
+        dna.getDna().add("CAG");
+        dna.getDna().add("TTA");
         return dna;
     }
     private DnaInDto arrayEmpty(){
